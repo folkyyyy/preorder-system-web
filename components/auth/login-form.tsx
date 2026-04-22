@@ -81,14 +81,14 @@ export function LoginForm() {
       let errorMessage = "เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่อีกครั้ง";
       
       if (axios.isAxiosError(err)) {
-        errorMessage = err.response?.data?.message || err.message;
+        errorMessage = err.response?.data?.error|| err.message;
       } else if (err instanceof Error) {
         errorMessage = err.message;
       }
 
       setError(errorMessage);
       toast.error("เข้าสู่ระบบไม่สำเร็จ", {
-        description: error,
+        description: errorMessage,
       });
     }
   };
