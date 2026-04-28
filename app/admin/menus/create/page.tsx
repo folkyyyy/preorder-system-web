@@ -1,9 +1,6 @@
 import React from 'react'
+import { MenuCreateContainer } from '@/components/admin/menu/create/menu-create-container'
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
-}
-
-export default page
+export default function CreateMenuPage() {
+  return <MenuCreateContainer />
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { usePathname } from "next/navigation";
 import {
   Breadcrumb,
@@ -13,31 +14,34 @@ import {
 export function AdminBreadcrumb() {
   const pathname = usePathname();
 
-  // ฟังก์ชันสำหรับหาชื่อหน้าจาก pathname
-  const getPageTitle = (path: string | null) => {
-    if (!path) return "จัดการข้อมูล";
+  const getBreadcrumbItems = (path: string | null) => {
+    if (!path) return [{ title: "จัดการข้อมูล", href: "" }];
 
-    // จัดการ path ที่ตรงเป๊ะๆ
-    switch (path) {
-      case "/admin":
-        return "แดชบอร์ด";
-      case "/admin/menus":
-        return "เมนูอาหาร";
-      case "/admin/preorder-dates":
-        return "วันที่พรีออเดอร์";
-      case "/admin/orders":
-        return "ออเดอร์เมนูอาหาร";
+    const items = [];
+
+    if (path === "/admin") {
+      items.push({ title: "แดชบอร์ด", href: "" });
+    } else if (path.startsWith("/admin/menus")) {
+      if (path === "/admin/menus") {
+        items.push({ title: "เมนูอาหาร", href: "" });
+      } else if (path === "/admin/menus/create") {
+        items.push({ title: "เมนูอาหาร", href: "/admin/menus" });
+        items.push({ title: "สร้างเมนูใหม่", href: "" });
+      } else {
+        items.push({ title: "เมนูอาหาร", href: "/admin/menus" });
+      }
+    } else if (path.startsWith("/admin/preorder-dates")) {
+      items.push({ title: "วันที่พรีออเดอร์", href: "" });
+    } else if (path.startsWith("/admin/orders")) {
+      items.push({ title: "ออเดอร์เมนูอาหาร", href: "" });
+    } else {
+      items.push({ title: "จัดการข้อมูล", href: "" });
     }
 
-    // จัดการ path ย่อยเผื่ออนาคต เช่น /admin/menus/create
-    if (path.startsWith("/admin/menus")) return "เมนูอาหาร";
-    if (path.startsWith("/admin/preorder-dates")) return "วันที่พรีออเดอร์";
-    if (path.startsWith("/admin/orders")) return "ออเดอร์เมนูอาหาร";
-
-    return "จัดการข้อมูล";
+    return items;
   };
 
-  const title = getPageTitle(pathname);
+  const items = getBreadcrumbItems(pathname);
 
   return (
     <Breadcrumb>
@@ -45,11 +49,28 @@ export function AdminBreadcrumb() {
         <BreadcrumbItem className="hidden md:block">
           <BreadcrumbLink href="/admin">ผู้ดูแลระบบ</BreadcrumbLink>
         </BreadcrumbItem>
-        <BreadcrumbSeparator className="hidden md:block" />
-        <BreadcrumbItem>
-          <BreadcrumbPage>{title}</BreadcrumbPage>
-        </BreadcrumbItem>
+        {items.length > 0 && (
+          <BreadcrumbSeparator className="hidden md:block" />
+        )}
+        
+        {items.map((item, index) => {
+          const isLast = index === items.length - 1;
+          
+          return (
+            <React.Fragment key={index}>
+              <BreadcrumbItem>
+                {isLast ? (
+                  <BreadcrumbPage>{item.title}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink href={item.href}>{item.title}</BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+              {!isLast && <BreadcrumbSeparator />}
+            </React.Fragment>
+          );
+        })}
       </BreadcrumbList>
     </Breadcrumb>
   );
 }
+
